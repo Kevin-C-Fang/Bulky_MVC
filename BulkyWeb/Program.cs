@@ -1,7 +1,16 @@
+using BulkyWeb.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add/configure entity framework core and adds to dependency injection so you don't have to handle creating/closing DbContext on each page.
+// Tools > NuGet Package manager > Package Manager Core
+// Enter "update-database" to create database
+builder.Services.AddDbContext<ApplicationDbContext>(options=>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -20,8 +29,14 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Pattern is after domain with the default controller as home and action is index
+// id is null if not explicit
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Category}/{action=Index}/{id?}");
 
 app.Run();
