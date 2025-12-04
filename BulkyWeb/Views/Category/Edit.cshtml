@@ -1,0 +1,46 @@
+﻿@model Category
+
+<form method="post">
+    @* 
+        Because the variable name is Id, this line/input is not required.
+        If it was any other name such as CategoryId then this would have to be added.
+        The reason is the ID denotes that the category object to be updated. Id is a default assumption here and if not then it would assume that the id is zero
+        because we aren't specifying it using asp-for. So we should use asp-for="CategoryId" and annotate that as [key]
+    *@
+    <input asp-for="Id" hidden />
+
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Edit Category</h2>
+            <hr />
+        </div>
+
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <div class="row mb-3 p-1">
+            <label asp-for="Name" class="p-0"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="row mb-3 p-1">
+            <label asp-for="DisplayOrder" class="p-0"></label>
+            <input asp-for="DisplayOrder" class="form-control" />
+            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-primary form-control">Update</button>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Category" asp-action="Index" class="btn btn-secondary border form-control">Back to List</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
