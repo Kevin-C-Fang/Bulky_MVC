@@ -1,10 +1,16 @@
-using BulkyWeb.Data;
+using Bulky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+/* Dependency Injection Lifetime
+    builder.Services.AddTransient<>();  // New service - every time it is requested
+    builder.Services.AddScoped<>();     // New service - once per request
+    builder.Services.AddSingleton<>();  // New service - once per application lifetime
+ */
 
 // Add/configure entity framework core and adds to dependency injection so you don't have to handle creating/closing DbContext on each page.
 // Tools > NuGet Package manager > Package Manager Core
