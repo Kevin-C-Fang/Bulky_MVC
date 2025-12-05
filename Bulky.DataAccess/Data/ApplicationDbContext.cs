@@ -14,6 +14,7 @@ namespace Bulky.DataAccess.Data
         // To create table, you have to do a migration to add table.
         // Go to package manager console, write "add-migration AddCategoryTableToDb"
         // It creates a migration class that logs the changes in entity framework syntax and when you update database, that migration is applied onto the database
+        // If database was lost or changed, you just have to change the connection string and update-database since you should still have the migrations.
         public DbSet<Category> Categories { get; set; }
 
         // Used to seed data within the database/table/notsure

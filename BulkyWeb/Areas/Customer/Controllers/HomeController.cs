@@ -2,10 +2,11 @@ using System.Diagnostics;
 using Bulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BulkyWeb.Controllers
+namespace BulkyWeb.Areas.Customer.Controllers
 {
     // Home is the controller, The name "Controller" is used in MVC to designate this as a controller.
     // Views of the controller will be in /views/Home.
+    [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
