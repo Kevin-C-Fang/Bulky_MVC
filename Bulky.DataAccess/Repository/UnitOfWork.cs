@@ -15,11 +15,13 @@ namespace Bulky.DataAccess.Repository
     {
         private readonly ApplicationDbContext _db;
         public ICategoryRepository Category { get; private set; }
+        public IProductRepository Product { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
             Category = new CategoryRepository(_db);
+            Product = new ProductRepository(_db);
         }
 
         // Since save isn't relevant to the repository or the model just to the db context, we separate that functionality out 
