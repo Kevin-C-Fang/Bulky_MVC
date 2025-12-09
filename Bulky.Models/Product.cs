@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -51,8 +52,10 @@ namespace Bulky.Models
 
         // Explicitly define the Category property annotation so it is used for foreign key navigation for the category ID.
         [ForeignKey("CategoryId")]
+        [ValidateNever]
         public Category Category { get; set; }
 
+        [ValidateNever]
         public string ImageUrl { get; set; }
 
     }
