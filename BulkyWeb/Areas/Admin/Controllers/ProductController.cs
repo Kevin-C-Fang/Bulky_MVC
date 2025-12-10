@@ -23,66 +23,9 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<Product> objProductList = _unitOfWork.Product.GetAll().ToList();
+            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             return View(objProductList);
         }
-
-        #region old code
-        /*
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Add(obj);
-                _unitOfWork.Save();
-
-                TempData["success"] = "Product created successfully";
-
-                return RedirectToAction("Index");
-            }
-
-            return View();
-        }
-        
-        public IActionResult Edit(int? id)
-        {
-            if(id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            Product? productFromDb = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-            if (productFromDb == null)
-            {
-                return NotFound();
-            }
-
-            return View(productFromDb);
-        }
-
-
-        [HttpPost]
-        public IActionResult Edit(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Update(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Product updated successfully";
-
-                return RedirectToAction("Index");
-            }
-
-            return View();
-        }
-        */
-        #endregion
 
         // Combines update and insert/Create functionality
         public IActionResult Upsert(int? id)
@@ -181,6 +124,96 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(productVM);
         }
 
+        #region API CALLS
+        // API endpoint to return product data, API support is already added in the controller with .NET and MVC architecture.
+        // Use this by going to {domain}/admin/product/getall to get the data.
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+            return Json(new { data = objProductList });
+        }
+
+        // API endpoint to delete a product and it's image by going to {domain}/admin/product/delete/{id}
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var productToBeDeleted = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+            if (productToBeDeleted == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, 
+                productToBeDeleted.ImageUrl.TrimStart('\\'));
+
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+
+            _unitOfWork.Product.Remove(productToBeDeleted);
+            _unitOfWork.Save();
+
+            return Json(new { success = true, message = "Delete Successful" });
+        }
+        #endregion
+
+        #region old code
+        /*
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Product obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _unitOfWork.Product.Add(obj);
+                _unitOfWork.Save();
+
+                TempData["success"] = "Product created successfully";
+
+                return RedirectToAction("Index");
+            }
+
+            return View();
+        }
+        
+        public IActionResult Edit(int? id)
+        {
+            if(id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            Product? productFromDb = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+            if (productFromDb == null)
+            {
+                return NotFound();
+            }
+
+            return View(productFromDb);
+        }
+
+
+        [HttpPost]
+        public IActionResult Edit(Product obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _unitOfWork.Product.Update(obj);
+                _unitOfWork.Save();
+                TempData["success"] = "Product updated successfully";
+
+                return RedirectToAction("Index");
+            }
+
+            return View();
+        }
+
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -212,5 +245,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+        */
+        #endregion
     }
 }
