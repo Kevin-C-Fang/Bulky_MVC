@@ -5,10 +5,11 @@
     }
     else
     {
-        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+        Layout = "/Views/Shared/_Layout.cshtml";
     }
 }
 
+<!-- Due to there initially not being a _ViewStart.cshtml, the pages in Manage didn't know to use the manage _Layout which contained the _ManageNav partial. -->
 <h1>Manage your account</h1>
 
 <div>
