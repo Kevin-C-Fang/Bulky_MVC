@@ -8,9 +8,18 @@ namespace Bulky.Utility
 {
     public static class SD
     {
+        // Roles that different users can have.
+        
+        // Customer is a user that registers an account and can make purchases
         public const string Role_Customer = "Customer";
+
+        // Company is a user but is registered by admin and has exceptions regarding purchasing where they can pay within 30 days instead of immediately
         public const string Role_Company = "Company";
+
+        // Admin is user with full permissions for crud operations
         public const string Role_Admin = "Admin";
+
+        // Employee is a user that has limited permissions such as modifying shipping of product and other details
         public const string Role_Employee = "Employee";
     }
 }

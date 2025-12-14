@@ -67,6 +67,11 @@
                             <option disabled selected>-- Select Role --</option>
                         </select>
                     </div>
+                    <div class="form-floating mb-3 col-md-6">
+                        <select asp-for="Input.CompanyId" style="display: none" asp-items="@Model.Input.CompanyList" class="form-select">
+                            <option disabled selected>-- Select Company --</option>
+                        </select>
+                    </div>
                     <div class="col-12">
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
                     </div>
@@ -111,4 +116,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // When document is ready, add a delegate that acts on changes to id=Input_Role to check if company and if so, make company dropdown visible otherwise invisible.
+        // Notice the id is not in the html, the asp-for automatically creates that ID on the actual page when inspected.
+        $(document).ready(function() {
+            $('#Input_Role').change(function(){
+                var selection = $('#Input_Role Option:Selected').text();
+                if(selection=='Company'){
+                    $('#Input_CompanyId').show();
+                }
+                else{
+                     $('#Input_CompanyId').hide();
+                }
+            })
+        })
+    </script>
 }
