@@ -21,5 +21,19 @@ namespace Bulky.Utility
 
         // Employee is a user that has limited permissions such as modifying shipping of product and other details
         public const string Role_Employee = "Employee";
+
+        // Constant strings for the status of the order
+        public const string StatusPending = "Pending";
+        public const string StatusApproved = "Approved";
+        public const string StatusInProcess = "Processing";
+        public const string StatusShipped = "Shipped";
+        public const string StatusCancelled = "Cancelled";
+        public const string StatusRefunded = "Refunded";
+
+        // Constant strings for the payment status of the order
+        public const string PaymentStatusPending = "Pending";
+        public const string PaymentStatusApproved = "Approved";
+        public const string PaymentStatusDelayedPayment = "ApprovedForDelayedPayment";
+        public const string PaymentStatusRejected = "Rejected";
     }
 }

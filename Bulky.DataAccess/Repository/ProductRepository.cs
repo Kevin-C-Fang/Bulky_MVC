@@ -42,6 +42,7 @@ namespace Bulky.DataAccess.Repository
                 }
             }
 
+            // By grabbing the object from the DB, changes made are automatically tracked, so no need to explicitly call Update.
             // _db.Products.Update(obj);
         }
     }

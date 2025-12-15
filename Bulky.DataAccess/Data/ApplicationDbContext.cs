@@ -25,10 +25,11 @@ namespace Bulky.DataAccess.Data
         // Doesn't create table since it's parent class IdentityUser already has a table, instead it's attached to that table but includes a discriminator column
         // which indicates what type of class it is.
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-
         public DbSet<Company> Companies { get; set; }
-
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
 
         // Used to seed data within the database/table/notsure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
