@@ -28,6 +28,8 @@ namespace Bulky.DataAccess.Data
 
         public DbSet<Company> Companies { get; set; }
 
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+
         // Used to seed data within the database/table/notsure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

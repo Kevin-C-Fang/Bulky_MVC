@@ -29,13 +29,18 @@ namespace Bulky.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
 
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
+
             // EF core gives a way to include the object with the data based on the foreign key relation using .Include.
             // This way, you don't have to manually get the foreign key object within the model, you can include it when retrieving through EF core.
-            if(!string.IsNullOrEmpty(includeProperties))
+            if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach(var includeProp in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -46,9 +51,11 @@ namespace Bulky.DataAccess.Repository
             return query.ToList();
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        // EF Core has a feature where it also tracks/updates the entity retrieved using EF core.
+        // Good for not having to manually update, but can be bad in some situations where its not explicitly stated.
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
             query = query.Where(filter);
             if (!string.IsNullOrEmpty(includeProperties))
             {
