@@ -170,11 +170,6 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 Response.Headers.Add("Location", session.Url);
                 return new StatusCodeResult(303);
             }
-            else
-            {
-                // Company account and we can process/ship order and get payment within 30 days
-
-            }
 
             return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVM.OrderHeader.Id });
         }
