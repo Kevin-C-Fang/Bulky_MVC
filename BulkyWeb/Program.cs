@@ -42,6 +42,23 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
+// Due to adding Nuget Authentication.Facebook, facebook authentication is made available.
+// Requires you to go to facebook.Developer and create an app to get configure app to allow sign in using facebook.
+builder.Services.AddAuthentication().AddFacebook(option =>
+{
+    option.AppId = builder.Configuration.GetSection("FaceBook:AppId").Get<string>();
+    option.AppSecret = builder.Configuration.GetSection("FaceBook:AppSecret").Get<string>();
+});
+
+// Configure application to add session.
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Need to add and map razor pages for identity since it uses Razor pages and not MVC.
 builder.Services.AddRazorPages();
 
@@ -67,11 +84,14 @@ StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey"
 
 app.UseRouting();
 
-// Checks if user credentials are valid
+// Uses checking to see if user credentials are valid
 app.UseAuthentication();
 
 // Allows access to website based on user role.
 app.UseAuthorization();
+
+// Tells app to add session to request pipeline.
+app.UseSession();
 
 app.MapRazorPages();
 

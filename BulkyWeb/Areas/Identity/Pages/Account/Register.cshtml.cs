@@ -216,8 +216,17 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        // Automatically signs the user in.
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        // If admin is creating role, don't auto log in.
+                        if (User.IsInRole(SD.Role_Admin))
+                        {
+                            TempData["success"] = "New User Created Successfully";
+                        }
+                        else
+                        {
+                            // Automatically signs the user in.
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
+
                         return LocalRedirect(returnUrl);
                     }
                 }
