@@ -10,7 +10,7 @@ namespace Bulky.DataAccess.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-                
+
         }
 
         // Used to create category table and property name is the table name
@@ -20,6 +20,17 @@ namespace Bulky.DataAccess.Data
         // If database was lost or changed, you just have to change the connection string and update-database since you should still have the migrations.
         public DbSet<Category> Categories { get; set; }
 
+        public DbSet<Product> Products { get; set; }
+
+        // Doesn't create table since it's parent class IdentityUser already has a table, instead it's attached to that table but includes a discriminator column
+        // which indicates what type of class it is.
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
         // Used to seed data within the database/table/notsure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,19 +38,20 @@ namespace Bulky.DataAccess.Data
 
             // Seeds data in category entity/table
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Action", DisplayOrder = 1},
+                new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "History", DisplayOrder = 3 });
 
             modelBuilder.Entity<Company>().HasData(
-                new Company { 
-                    Id = 1, 
-                    Name = "Tech Solution", 
-                    StreetAddress="123 Tech St", 
-                    City="Tech City", 
-                    PostalCode="12121", 
-                    State="IL", 
-                    PhoneNumber="6669990000"
+                new Company
+                {
+                    Id = 1,
+                    Name = "Tech Solution",
+                    StreetAddress = "123 Tech St",
+                    City = "Tech City",
+                    PostalCode = "12121",
+                    State = "IL",
+                    PhoneNumber = "6669990000"
                 },
                 new Company
                 {
