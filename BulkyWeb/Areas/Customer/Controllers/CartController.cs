@@ -3,6 +3,7 @@ using Bulky.Models;
 using Bulky.Models.ViewModels;
 using Bulky.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
@@ -15,14 +16,16 @@ namespace BulkyWeb.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailSender _emailSender;
 
         // Binds the property so that when a form submits, the values are automatically populated.
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
-        public CartController(IUnitOfWork unitOfWork)
+        public CartController(IUnitOfWork unitOfWork, IEmailSender emailsender)
         {
             _unitOfWork = unitOfWork;
+            _emailSender = emailsender;
         }
 
         public IActionResult Index()
@@ -194,6 +197,9 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
                 HttpContext.Session.Clear();
             }
+
+            // Send order confirmation to email.
+            _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, "New Order - Bulky", $"<p>New Order Created - {orderHeader.Id}</p>");
 
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);

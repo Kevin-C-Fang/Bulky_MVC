@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Bulky.Utility;
 using Stripe;
+using Bulky.DataAccess.DbInitializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Add DB Initializer to services so it can be found later on when app starts in SeedDatabase().
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
 // Need to add and map razor pages for identity since it uses Razor pages and not MVC.
 builder.Services.AddRazorPages();
 
@@ -93,6 +97,7 @@ app.UseAuthorization();
 // Tells app to add session to request pipeline.
 app.UseSession();
 
+SeedDatabase();
 app.MapRazorPages();
 
 // Pattern is after domain with the default controller as home and action is index
@@ -102,3 +107,13 @@ app.MapControllerRoute(
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// Method to call Initialize within DbInitializer to seed and push migrations when app starts by getting the service.
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}
