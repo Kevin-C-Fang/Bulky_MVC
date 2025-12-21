@@ -55,8 +55,8 @@ namespace Bulky.Models
         [ValidateNever]
         public Category Category { get; set; }
 
+        // Tells EF core about 1-many relation between product-productImages
         [ValidateNever]
-        public string ImageUrl { get; set; }
-
+        public List<ProductImage> ProductImages { get; set; }
     }
 }

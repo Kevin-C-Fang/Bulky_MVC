@@ -36,10 +36,14 @@ namespace Bulky.DataAccess.Repository
                 objFromDb.CategoryId = obj.CategoryId;
                 objFromDb.Author = obj.Author;
 
-                if (obj.ImageUrl != null)
-                {
-                    objFromDb.ImageUrl = obj.ImageUrl;
-                }
+                // You could do this and EF core automatically configures ands saves the product images to its table as well
+                // I prefer to explicitly add it rather than implicitly rely on EF core here, because I'm not that clear on the process and just prefer clarity.
+                // objFromDb.ProductImages = obj.ProductImages;
+
+                //if (obj.ImageUrl != null)
+                //{
+                //    objFromDb.ImageUrl = obj.ImageUrl;
+                //}
             }
 
             // By grabbing the object from the DB, changes made are automatically tracked, so no need to explicitly call Update.

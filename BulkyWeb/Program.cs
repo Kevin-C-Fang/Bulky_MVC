@@ -51,6 +51,12 @@ builder.Services.AddAuthentication().AddFacebook(option =>
     option.AppSecret = builder.Configuration.GetSection("FaceBook:AppSecret").Get<string>();
 });
 
+builder.Services.AddAuthentication().AddMicrosoftAccount(option =>
+{
+    option.ClientId = builder.Configuration.GetSection("Microsoft:ClientId").Get<string>();
+    option.ClientSecret = builder.Configuration.GetSection("Microsoft:ClientSecret").Get<string>();
+});
+
 // Configure application to add session.
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

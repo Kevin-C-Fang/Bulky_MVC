@@ -40,6 +40,7 @@ namespace Bulky.DataAccess.Repository
 
             // EF core gives a way to include the object with the data based on the foreign key relation using .Include.
             // This way, you don't have to manually get the foreign key object within the model, you can include it when retrieving through EF core.
+            // name used must match the navigation property name within the model.
             if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach(var includeProp in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
