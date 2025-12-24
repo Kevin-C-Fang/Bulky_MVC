@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 namespace Bulky.DataAccess.Repository
 {
-    // Gives access to all repositories that you want, but also instantiates all repos even if not needed.
-    // Cleaner approach, but more monolithic or tiered.
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
@@ -36,8 +34,6 @@ namespace Bulky.DataAccess.Repository
             ProductImage = new ProductImageRepository(_db);
         }
 
-        // Since save isn't relevant to the repository or the model just to the db context, we separate that functionality out 
-        // so it can be applicable to multiple future models
         public void Save()
         {
             _db.SaveChanges();

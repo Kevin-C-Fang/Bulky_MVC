@@ -13,32 +13,19 @@ namespace Bulky.DataAccess.Data
 
         }
 
-        // Used to create category table and property name is the table name
-        // To create table, you have to do a migration to add table.
-        // Go to package manager console, write "add-migration AddCategoryTableToDb"
-        // It creates a migration class that logs the changes in entity framework syntax and when you update database, that migration is applied onto the database
-        // If database was lost or changed, you just have to change the connection string and update-database since you should still have the migrations.
         public DbSet<Category> Categories { get; set; }
-
         public DbSet<Product> Products { get; set; }
-
-        // Doesn't create table since it's parent class IdentityUser already has a table, instead it's attached to that table but includes a discriminator column
-        // which indicates what type of class it is.
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
-
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-
         public DbSet<ProductImage> ProductImages { get; set; }
 
-        // Used to seed data within the database/table/notsure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Seeds data in category entity/table
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },

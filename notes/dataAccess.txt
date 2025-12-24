@@ -1,0 +1,68 @@
+ApplicationDbContext:
+	Inheritance:
+		Inherit from DbContext in most cases
+		Inherit from IdentityDbContext<T> when you want to access a extended T class because EF core has some pre-established tables and DbContext and managers regarding Identity.
+			Ex. You want to extend IdentityUser to add properties but you don't want to create a whole new table. Instead EF Core can figure out that by creating a class and adding properties and inheriting from IdentityUser, that you want to extend that class/table definition.  The only issue becomes how to access it because it's pre-established route uses IdentityDbContext, so you need to create a accesspoint that forces the typecast from IdentityUser to your own class which is DbContext. It also adds a discriminator column to indicate what class it is.
+			
+	Create table in database:
+		Create a property in format: public DbSet<model> TableName {get; set;}
+			The property name is the table name
+			You will have to use package manager console to add-migration and update-database to let EF core know a table was created
+			
+	Seeding data within database:
+		In OnModelCreating(ModelBuilder builder), you use builder to seed data using format: modelBuilder.Entity<model>().HasData( new model {}, new model {})
+			You would assign values to the model properties within the {}.
+
+DbInitializer:
+	Use try/catch to apply pending migrations when starting your app. This just automates the update-database if you forget.
+	You can also check for things such as seeded data and if it's not there, you can force it to seed the data by creating it.
+		Think of this as a final check and handling if it does occur.
+
+Migrations:
+	Holds migrations that log the changes in EF core syntax whenever you add-migration new changes
+	Migrations are applied onto the database when you update-database
+	If database was lost/changed, you can use a new database and update-database since you should still have the migrations.
+	If note, but the DbContext and models are still the same, you can add-migration and update-database to apply your database schema to EF core.
+	
+Repository:
+	Use a IRepository/Repository class to define basic CRUD functionality that can be applicable to different classes.
+		Use T which represents a generic stub that represents any model/class.
+			This enables you to write code that is applicable to any class
+			Ex. 
+				public interface IRepository<T> where T : class
+				public class Repository<T> : IRepository<T> where T : class
+		An example of CRUD functionality which may be different for different classes is Update.
+			You can separate that functionality by creating separate repository classes IModelRepository to represent each model.
+			
+	Sometimes you need data from other tables but how to combine it so it can be displayed?
+		Use a string to that contains the navigation property name within the model and call .Include for each one on the query.
+			Ex. 
+			IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
+            query = query.Where(filter);
+			foreach (var includeProp in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+			{
+				query = query.Include(includeProp);
+			}
+			
+	Sometimes you need to apply a filter such as u=>u.Id == userId.
+		Ex.
+		public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = dbSet;
+
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
+		}
+	
+Unit of Work:
+	Think of this as a class which gives access to all of the model repository behavior. So, instead of needing to get every class to access behavior, you have one monolothic class to gain access.
+	Save can be added here because it's not relevant to repository or the model, just the DbContext which saves you from having to go DbContext to use it.
+	
+Entity FrameWork Core:
+	When getting data from the DbSet in DbContext, any changes you make are actually automatically pushed to the database. So, when you don't want that or want to make it explicit, you can use dbSet.AsNoTracking() so it gives you data that isn't tracked. Think of it as it giving you a deep copy rather than a shallow copy.
+	
+	It can also update the table of a navigation property which is used to refer to the data of a foreign key.
+	
+	CRUD operations rely on the model ID or property with annotation [Key].

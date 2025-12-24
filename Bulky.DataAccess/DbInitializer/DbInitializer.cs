@@ -27,7 +27,6 @@ namespace Bulky.DataAccess.DbInitializer
 
         public void Initialize()
         {
-            // Apply pending migrations
             try
             {
                 if (_db.Database.GetPendingMigrations().Count() > 0)
@@ -40,7 +39,6 @@ namespace Bulky.DataAccess.DbInitializer
 
             }
 
-            // Create roles if not already seeded
             if (!_roleManager.RoleExistsAsync(SD.Role_Customer).GetAwaiter().GetResult())
             {
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer)).GetAwaiter().GetResult();
@@ -48,7 +46,6 @@ namespace Bulky.DataAccess.DbInitializer
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Company)).GetAwaiter().GetResult();
 
-                // If roles are not already seed, create admin as well
                 _userManager.CreateAsync(new ApplicationUser
                 {
                     UserName = "admin@dotnetmastery.com",

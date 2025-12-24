@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Bulky.DataAccess.Repository
 {
-    // Inherit base Repository methods from Repository<Category> and additional category specific methods from ICategoryRepository.
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         private ApplicationDbContext _db;

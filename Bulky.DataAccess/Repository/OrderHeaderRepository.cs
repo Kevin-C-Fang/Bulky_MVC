@@ -41,13 +41,11 @@ namespace Bulky.DataAccess.Repository
         {
             var orderFromDb = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
 
-            // Session ID is generated whenever a user attempts to make a payment. 
             if (!string.IsNullOrEmpty(sessionId))
             {
                 orderFromDb.SessionId = sessionId;
             }
 
-            // Only when payment goes through does a paymentIntentId show and payment was successful.
             if (!string.IsNullOrEmpty(paymentIntentId))
             {
                 orderFromDb.PaymentIntentId = paymentIntentId;
