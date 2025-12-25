@@ -7,7 +7,7 @@ ApplicationDbContext:
 	Create table in database:
 		Create a property in format: public DbSet<model> TableName {get; set;}
 			The property name is the table name
-			You will have to use package manager console to add-migration and update-database to let EF core know a table was created
+			You will have to use Tools > NuGet Package manager > Package Manager Console to "add-migration migration name"and "update-database" to let EF core know a table was created
 			
 	Seeding data within database:
 		In OnModelCreating(ModelBuilder builder), you use builder to seed data using format: modelBuilder.Entity<model>().HasData( new model {}, new model {})

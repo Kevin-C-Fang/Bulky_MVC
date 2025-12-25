@@ -1,0 +1,53 @@
+Program.cs:
+	Where you add services to the app and configure options
+	
+	Dependency Injection:
+		A design pattern that allows you to inject a required class into another class rather than having to create/close a new instance within that class.
+		
+		Dependency Injection Lifetime
+			builder.Services.AddTransient<>();  // New service - every time it is requested
+			builder.Services.AddScoped<>();     // New service - once per request
+			builder.Services.AddSingleton<>();  // New service - once per application lifetime
+	
+	DbContext: Adds DbContext to dependency injection while also configuring it to use sql server using the connection string within AppSettings.Development.json. Install EF core nuget package Microsoft.EntityFrameworkCore/Sqlite/SqlServer/Tools
+		builder.Services.AddDbContext<ApplicationDbContext>(options=>
+			options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+	
+	Identity: Adds identity configuration, adds database tables needed, and indicates they will be managed by using ApplicationDbContext. To add role, customize it by adding identity and role together. Install nuget package MicrosoftAspNetCore.Identity.UI.
+		builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+		
+	Redirecting: Configurations that redirect the user to a specified routing path and must be added after identity configuration. This is needed because there will be different areas of the code that require redirecting, but you don't want to create the same view for every instance, it's better to reference to it in IdentityArea. Think of this as a pointer/path that is preset for related issues that pop up. 
+		builder.Services.ConfigureApplicationCookie(options =>
+		{
+			options.LoginPath = $"/Identity/Account/Login";
+			options.LogoutPath = $"/Identity/Account/Logout";
+			options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+		});
+		
+	Facebook Authentication: Adds facebook authentication to app, but also requires that you go to Facebook.Developer to create the id/secret keys to be configured. Install nuget package Microsoft.AspNetCore.Authentication.Facebook.
+		builder.Services.AddAuthentication().AddFacebook(option =>
+		{
+			option.AppId = builder.Configuration.GetSection("FaceBook:AppId").Get<string>();
+			option.AppSecret = builder.Configuration.GetSection("FaceBook:AppSecret").Get<string>();
+		});
+	
+	Microsoft Authentication: Install nuget package Microsoft.AspNetCore.Authentication.MicrosoftAccount.
+		Same as facebook authentication.
+		
+	Razor Pages: Adds services for razor pages because identity pages uses razor and not MVC.
+		builder.Services.AddRazorPages();
+		
+	Stripe: Configure stripe within project by setting the API key. Need to go to stripe and create keys in developer mode.
+		StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+		
+	Authentication: Uses checking to see if user credentials are valid
+		app.UseAuthentication();
+
+	Authorization: Allows access to website based on user role.
+		app.UseAuthorization();
+		
+	Mapping default path: sets the default routing after domain, similar to redirecting because when working with areas/identity, the files are nested.
+		app.MapControllerRoute(
+			name: "default",
+			pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
+		);
