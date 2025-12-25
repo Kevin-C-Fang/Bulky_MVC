@@ -30,7 +30,6 @@ namespace Bulky.Models
         [ValidateNever]
         public ApplicationUser ApplicationUser { get; set; }
 
-        // Doesn't add to database and is only for display purposes
         [NotMapped]
         public double Price { get; set; }
     }

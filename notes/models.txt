@@ -1,0 +1,17 @@
+Models:
+	Holds the models used for your application.
+	Models represent the definition for what data your table will have.
+
+Annotations:
+	[Key]: sets the property as the primary key. If property name is "Id" or "modelName + Id", entity framework assumes it is the primary.
+	[Required]: enforces not null constraint on a property
+	[MaxLength(30]: Server-side validation enforced on the property that it's max length is 30 characters.
+	[DisplayName("First Name")]: sets the display text to use if referenced in tag helper.
+	[Range(1, 100, ErrorMessage ="Display Order must be between 1-100")]: Server-side validations enforced on the property that the range of values is between 1 and 100 and also customizes the error message that is displayed on the UI side.
+	[NotMapped]: Doesn't add to the database and is only used to hold values for display purposes.
+	[ForeignKey("correspondingPropertyId")]: Used on a navigation property which is used to hold the model that the foreign key references. It indicates which is the foreign key in the annotation.
+	[ValidateNever]: This is used in server-side validation to indicate that this should not be validated. This is because sometimes the data is null, so indicating this doesn't pop up any warnings since it's not required to be validated.
+
+ViewModels:
+	In MVC, the view is tightly bound to the model. Think of this as it only being able to use a model, but what to do when you need multiple data?
+	You create a viewmodel which is a combination of classes which is used to bind to a view and the classes within can be accessed through the view model.

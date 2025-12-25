@@ -46,16 +46,12 @@ namespace Bulky.Models
         [Range(1, 1000)]
         public double Price100 { get; set; }
 
-        // In entity framework, you need a property to represent the foreign key id and a navigation property to the category table.
-        // In SQL, you would have a column categoryId and a constraint on foreign key added in SQL server.
         public int CategoryId { get; set; }
 
-        // Explicitly define the Category property annotation so it is used for foreign key navigation for the category ID.
         [ForeignKey("CategoryId")]
         [ValidateNever]
         public Category Category { get; set; }
 
-        // Tells EF core about 1-many relation between product-productImages
         [ValidateNever]
         public List<ProductImage> ProductImages { get; set; }
     }

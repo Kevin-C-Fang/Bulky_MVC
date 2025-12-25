@@ -21,9 +21,7 @@ namespace Bulky.Utility
 
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            // Logic to send email
             var client = new SendGridClient(SendGridSecret);
-
             var from = new EmailAddress("kfang749@gmail.com", "Bulky");
             var to = new EmailAddress(email);
             var message = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);

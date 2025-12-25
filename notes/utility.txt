@@ -1,0 +1,17 @@
+SD:
+	Used to contain constant strings that can be used as a key.
+	List:
+		Roles that different uses can have
+		Different order statuses
+		Different payment statuses
+		Key for data
+
+EmailSender:
+	Handler for sending emails. Common functionality separated that can be called when needed. Need to create keys on sendgrid
+	
+	var client = new SendGridClient(SendGridSecret);
+	var from = new EmailAddress("email", "name");
+	var to = new EmailAddress(email);
+	var message = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
+
+	return client.SendEmailAsync(message);
