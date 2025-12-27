@@ -10,12 +10,6 @@
     </div>
     <div class="card-body p-4">
         <form method="post">
-            @* 
-            Because the variable name is Id, this line/input is not required.
-            If it was any other name such as CategoryId then this would have to be added.
-            The reason is the ID denotes that the category object to be updated. Id is a default assumption here and if not then it would assume that the id is zero
-            because we aren't specifying it using asp-for. So we should use asp-for="CategoryId" and annotate that as [key]
-            *@
             <input asp-for="Id" hidden />
 
             <div class="border p-3 mt-4">

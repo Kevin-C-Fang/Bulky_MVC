@@ -1,7 +1,6 @@
 ﻿var dataTable;
 
 $(document).ready(function () {
-    // Use the asp-route-status to get the specific status in the URL to apply filters to the data using the filter buttons.
     var url = window.location.search;
 
     if (url.includes("inprocess")) {

@@ -36,6 +36,7 @@ Repository:
 			
 	Sometimes you need data from other tables but how to combine it so it can be displayed?
 		Use a string to that contains the navigation property name within the model and call .Include for each one on the query.
+		Include will exclude data where that property isn't populated such as navigation property, solution is to make that property optional and instantiate a new instance.
 			Ex. 
 			IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
             query = query.Where(filter);

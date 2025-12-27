@@ -1,6 +1,4 @@
 ﻿@{
-    // Use razor code to grab the asp-route-status assigned value and dynamically change the bootstrap classes on each list item
-    // based on what the status is because that signifies which filter is selected, otherwise it defaults to "text-primary".
     var status = Context.Request.Query["status"];
 
     var pending = "text-primary";
@@ -41,7 +39,6 @@
         <div class="d-flex justify-content-between pb-5 pt-2">
             <span></span>
             <ul class="list-group list-group-horizontal-sm">
-                <!-- Use the razor variables to dynamically apply styling according to the filter buttons-->
                 <a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="inprocess">
                 <li class="list-group-item @inprocess">In Process</li>
                 </a>

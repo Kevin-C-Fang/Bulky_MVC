@@ -18,7 +18,6 @@ namespace BulkyWeb.Areas.Customer.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSender _emailSender;
 
-        // Binds the property so that when a form submits, the values are automatically populated.
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
@@ -87,14 +86,10 @@ namespace BulkyWeb.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            // Re-instantiating the shopping cart list because the details are lost since they are not tracked in the input field on the form.
             ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product");
-
             ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
 
-            // Error can occur with EF core because it thinks you want to add a new entity through ApplicationUser instead of it referencing it using the ID.
-            // ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == userId);
             ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == userId);
 
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
@@ -103,7 +98,6 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
 
-            // Set order/payment status based on whether the user is a regular or company account
             if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
                 ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
@@ -118,7 +112,6 @@ namespace BulkyWeb.Areas.Customer.Controllers
             _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
             _unitOfWork.Save();
 
-            // Think of this as a receipt but for every product
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 OrderDetail orderDetail = new()
@@ -135,14 +128,12 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
             if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
-                // Regular customer account and need to capture payment using stripe logic
-                // Gets the domain dynamically using the host value and the http/https using scheme.
                 var domain = Request.Scheme + "://" + Request.Host.Value + "/";
                 var options = new SessionCreateOptions
                 {
                     SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
                     CancelUrl = domain + "customer/cart/index",
-                    LineItems = new List<SessionLineItemOptions>(), // Basically all the product details
+                    LineItems = new List<SessionLineItemOptions>(), 
                     Mode = "payment",
                 };
 
@@ -150,12 +141,10 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 {
                     var sessionLineItem = new SessionLineItemOptions
                     {
-                        // Price data is used to create a new price object.
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
+                            UnitAmount = (long)(item.Price * 100),
                             Currency = "usd",
-                            // Used to hold information related to the product such as title, images, description
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = item.Product.Title
@@ -167,13 +156,11 @@ namespace BulkyWeb.Areas.Customer.Controllers
                     options.LineItems.Add(sessionLineItem);
                 }
 
-                // All this is to create the service for stripe and log that payment session ID, we will then redirect to stripe for payment.
                 var service = new SessionService();
                 Session session = service.Create(options);
                 _unitOfWork.OrderHeader.UpdateStripePaymentId(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
                 _unitOfWork.Save();
 
-                // Redirecting to a new URL which is payment through stripe and when successful, redirect to SuccessUrl, otherwise redirect to CancelUrl.
                 Response.Headers.Add("Location", session.Url);
                 return new StatusCodeResult(303);
             }
@@ -183,12 +170,10 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
         public IActionResult OrderConfirmation(int id)
         {
-            // We confirm payment when redirected to order confirmation by using the session Id to access the stripe session to confirm if payment went through.
             OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id, includeProperties: "ApplicationUser");
 
             if(orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
             {
-                // Order by customer, so we need to check if was payment was made to approve/process shipping.
                 var service = new SessionService();
                 Session session = service.Get(orderHeader.SessionId);
 
@@ -202,7 +187,6 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 HttpContext.Session.Clear();
             }
 
-            // Send order confirmation to email.
             _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, "New Order - Bulky", $"<p>New Order Created - {orderHeader.Id}</p>");
 
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();

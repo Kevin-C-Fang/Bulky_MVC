@@ -1,16 +1,13 @@
 ﻿var dataTable;
 
-// Use jquery to load data table on document ready.
 $(document).ready(function () {
     loadDataTable();
 })
 
-// Use javascript to load the table with features using #tblData selector using a ajax to load data from the api endpoint
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         "ajax": { url: '/admin/product/getall' },
 
-        // data name must match the json data naming, so you will need to reference the actual json data for the name.
         "columns": [
             { data: 'title', "width": "25%" },
             { data: 'isbn', "width": "15%" },
@@ -18,7 +15,6 @@ function loadDataTable() {
             { data: 'author', "width": "15%" },
             { data: 'category.name', "width": "10%" },
             {
-                // Render the edit/delete buttons with the product id to redirect to edit page or delete endpoint on click.
                 data: 'id',
                 "render": function (data) {
                     return `<div class="w-75 btn-group" role="group">

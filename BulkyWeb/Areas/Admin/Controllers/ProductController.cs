@@ -14,8 +14,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        // Interface provided by default and gives access to the wwwroot path/root folder
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
@@ -30,24 +28,10 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(objProductList);
         }
 
-        // Combines update and insert/Create functionality
         public IActionResult Upsert(int? id)
         {
-            // We need to populate categories but we can't pass more than one object. There are 4 routes
-            // They all transfer data from controller to view and is useful for when the needed data is not in the model.
-            // 1. Viewbag - dynamic property that wraps around ViewData, any # of values canbe assigned, any name can be used as key-value pair, and only laps for current http request.
-            // Because Viewbag wraps around/inserts into ViewData, the property name and key of viewdata must not match.
-            // Ex. Controller: ViewBag.CategoryList = categoryList; View: asp-items="ViewBag.CategoryList"
-            // 2. Viewdata - differs that it's a dictionary type, so value must be type cast before use.
-            // Ex. Controller: ViewData["CategoryList"] = categoryList; View: asp-items="@(ViewData["CategoryList"] as IEnumerable<SelectListItem>)"
-            // 3. TempData - stores data between 2 consecutive requests. Must be type cast and null checked and only stores one time messages.
-            // Ex. Controller: TempData["CategoryList" = categoryList; View: asp-items="@(TempData["CategoryList"] as IEnumerable<SelectListItem>)"
-
-            // 4. Use viewmodel to encapsulate all data needed.
-
             ProductVM productVM = new()
             {
-                // EF core projections allow you to convert a container into another while selectively setting some properties.
                 CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
@@ -56,7 +40,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 Product = new Product()
             };
 
-            // If id is null, we are displaying whether we are creating a product, else we are updating a product
             if (id == null || id == 0)
             {
                 return View(productVM);
@@ -73,8 +56,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                // If post from create, the ID will be 0 and on update it will be filled in.
-                // Create product first to use id to create folder for images
                 if (productVM.Product.Id == 0)
                 {
                     _unitOfWork.Product.Add(productVM.Product);
@@ -90,13 +71,10 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
 
-                // Uses the file passed in to copy and create a new file at "images\product" with a new name.
-                // A new image was uploaded.
                 if (files != null)   
                 {
                     foreach(IFormFile file in files)
                     {
-                        // For each file, create directory, file if it didn't already existed.
                         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                         string productPath = @"images\products\product-" + productVM.Product.Id;
                         string finalPath = Path.Combine(wwwRootPath, productPath);
@@ -132,8 +110,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Exception shown when returning view without parameter due to CategoryList not being populated and passed in.
-            // Since we still want the current data and to just populate the category list, use productVM to populate category list
             productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
             {
                 Text = u.Name,
@@ -169,8 +145,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
         }
 
         #region API CALLS
-        // API endpoint to return product data, API support is already added in the controller with .NET and MVC architecture.
-        // Use this by going to {domain}/admin/product/getall to get the data.
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -178,7 +152,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return Json(new { data = objProductList });
         }
 
-        // API endpoint to delete a product and it's image by going to {domain}/admin/product/delete/{id}
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
@@ -201,95 +174,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
             return Json(new { success = true, message = "Delete Successful" });
         }
-        #endregion
-
-        #region old code
-        /*
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Add(obj);
-                _unitOfWork.Save();
-
-                TempData["success"] = "Product created successfully";
-
-                return RedirectToAction("Index");
-            }
-
-            return View();
-        }
-
-        public IActionResult Edit(int? id)
-        {
-            if(id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            Product? productFromDb = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-            if (productFromDb == null)
-            {
-                return NotFound();
-            }
-
-            return View(productFromDb);
-        }
-
-
-        [HttpPost]
-        public IActionResult Edit(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Update(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Product updated successfully";
-
-                return RedirectToAction("Index");
-            }
-
-            return View();
-        }
-
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            Product? productFromDb = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-            if (productFromDb == null)
-            {
-                return NotFound();
-            }
-
-            return View(productFromDb);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePost(int? id)
-        {
-            Product? obj = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-
-            _unitOfWork.Product.Remove(obj);
-            _unitOfWork.Save();
-            TempData["success"] = "Product deleted successfully";
-
-            return RedirectToAction("Index");
-        }
-        */
         #endregion
     }
 }

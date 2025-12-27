@@ -46,7 +46,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
         [ActionName("Details")]
         public IActionResult Details_PAY_NOW()
         {
-            // Due to posting, we might lose data, so re-establish the order header/details.
             OrderVM.OrderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == OrderVM.OrderHeader.Id, includeProperties: "ApplicationUser");
             OrderVM.OrderDetails = _unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == OrderVM.OrderHeader.Id, includeProperties: "Product");
 
@@ -93,7 +92,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
             if (orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
             {
-                // Payment by company through admin.
                 var service = new SessionService();
                 Session session = service.Get(orderHeader.SessionId);
 
@@ -211,7 +209,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
         {
             IEnumerable<OrderHeader> objOrderHeaders;
 
-            // Initial attempt was that I added additional filtering on the container. It's cleaner, but is a bit redundant for slightly less code.
             if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
             {
                 objOrderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser").ToList();

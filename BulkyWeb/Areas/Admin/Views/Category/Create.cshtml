@@ -9,25 +9,9 @@
         </div>
     </div>
     <div class="card-body p-4">
-        <!-- When submit button of this form is triggered, it will hit endpoint with the post request.
-            You have to create a action method inside CategoryController of the came name with data annotation [HttpPost]
-            This is so when something is posted, that endpoint is triggered and category can be passed in.
-        -->
         <form method="post" class="row">
             <div class="border p-3">
-                <!--
-                    Use <div asp-validation-summary="All"></div> to display all error messages.
-                     You can use "ModelOnly" to only show errors in model, but not related to properties
-                     This helps separate the errors specific to properties from errors specific to the model.
-                -->
                 <div asp-validation-summary="ModelOnly"></div>
-
-                <!--
-                    Use tag helper asp-for to designate the input value to be saved to the model Category object.
-                    It can also automatically assign the input type text based on the property type.
-                    It can also automatically set the display text for label based on the property name.
-                        For display, you can use data annotation [DisplayName("Display Order")] for that property in the model Category class.
-                -->
                 <div class="form-floating py-2 col-12">
                     <input asp-for="Name" class="form-control border-0 shadow" />
                     <label asp-for="Name" class="ms-2"></label>
@@ -53,12 +37,6 @@
 </div>
 
 @section Scripts{
-    @*  Consumes the partial view with partial tag helper by adding it in a section using razor syntax. The name must match the file name. 
-        Since it was script related, it was added in Scripts, but if not you could just add it directly.
-        By default, looks in Shared folder because thats the default location for any partial view.
-        This enables client side validation so it won't submit the form until validation is passed, so you only have to worry about custom validation from the server side.
-    *@
-
     @{
         <partial name="_ValidationScriptsPartial" />
     }

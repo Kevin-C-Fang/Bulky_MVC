@@ -9,10 +9,8 @@
         </div>
     </div>
     <div class="card-body p-4">
-        <!--enctype sets the encoded type for file download and is passed in on the httppost-->
         <form method="post" class="row" enctype="multipart/form-data">
             <input asp-for="Product.Id" hidden />
-            @* <input asp-for="Product.ImageUrl" hidden /> *@
             <div class="row">
                 <div class="col-10">
                     <div class="border p-3">
@@ -57,7 +55,6 @@
                             <span asp-validation-for="Product.Price100" class="text-danger"></span>
                         </div>
                         <div class="form-floating py-2 col-12">
-                            <!-- Dropdown that uses the asp-items to display category list and asp-for to link the values to categoryId -->
                             <select asp-for="Product.CategoryId" asp-items="@Model.CategoryList" class="form-select border-0 shadow">
                                 <option disabled selected>--Select Category--</option>
                             </select>
@@ -65,7 +62,6 @@
                             <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
                         </div>
                         <div class="form-floating py-2 col-12">
-                            <!--name attribute must match parameter in post to bind file-->
                             <input type="file" name="files" class="form-control border-0 shadow" multiple />
                             <label asp-for="Product.ProductImages" class="ms-2"></label>
                         </div>
@@ -74,12 +70,10 @@
                                 @if (Model.Product.Id != 0)
                                 {
                                     <button type="submit" class="btn btn-primary form-control">Update</button>
-
                                 }
                                 else
                                 {
                                     <button type="submit" class="btn btn-primary form-control">Create</button>
-
                                 }
                             </div>
                             <div class="col-6 col-md-3">

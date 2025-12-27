@@ -41,8 +41,6 @@
                                     Content Management
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <!--asp-area is needed to properly direct the route to area/controller/action/view. Once within a area, you don't need to set asp-area
-                                    unless you are directing to a different area. -->
                                     <li>
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
                                     </li>
@@ -65,8 +63,6 @@
 
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                <!-- Similar to using a partial view, but here it calls the ViewComponent ShoppingCart InvokeAsync which acts as a controller and returns the
-                                    Default view within /Shared/Components/ShoppingCart/Default.cshtml.-->
                                 @await Component.InvokeAsync("ShoppingCart")
                             </a>
                         </li>

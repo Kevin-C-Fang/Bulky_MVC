@@ -1,0 +1,258 @@
+wwwroot:
+	The web root directory that stores all the static files of a web application such as css, images, js and js libraries such as bootstrap and jquery.
+	
+	JavaScript: Use files to add interactive UI.
+		You probably could implement in the view, however if you want to use JS libraries then you have to implement in JS files or section.
+		Ex. Use jquery to load table data on document ready.
+		Ex. Use ajax to get json data from a API endpoint to populate a table using the exact same naming within the json data.
+		Ex. Render UI elements and set up interactive actions on those elements.
+		
+	Files can be accessed through "~/"
+
+ViewComponents:
+	Holds components that act similar to a page model or in MVC the controller. Must have ViewComponent at end of the file name.
+	So, the view for the component must be inside Views/Shared/Components/{classNameWithoutViewComponent}/Default.cshtml.
+	The advantage of this is that it's similar to partial views but with a backend to run server-side calculations. 
+	Execute it by using @await Component.InvokeAsync("classNameWithoutViewComponent") which is similar to using a partial view.
+
+Views:
+	Shared:
+		_ViewImports.cshtml:
+			Holds common using statements that will apply to files within it's file and subdirectories
+			Nested directories also need this, so the pathing used changes because it's ina  different directory.
+			
+		_ViewStart.cshtml:
+			Code that executes before other views that will apply to files within it's file and subdirectories. 
+			Used to execute common code such as setting the default layout page.
+			Nested directories also need this, so the pathing used changes because it's ina  different directory.
+			
+		_LoginPartial.cshtml/_Notification.cshtml/_ValidationScriptsPartial.cshtml:
+			These are partial views/scripts that can be inserted into a view when needed or to separate out the code by using the partial tag helper and inserting <partial name="_Name" /> into the view needed.
+				Name must match file name.
+				Default location is in Shared folder because thats default for any partial view, other you have to specify the path.
+			_LoginPartial: Separates code needed to determine whether login/register or account management/logout should be displayed depending on whether there is a signed in user.
+			_Notification: Scripts that add toastr notifications when changes are made.
+			_ValidationScriptsPartial: Scripts that add jquery validation to client side that can be inserted into a view when needed on forms. The form will not submit unless validation pass, so client side doesn't have to process validations unless there are custom validations.
+		
+		_Layout.cshtml:
+			A template that is used across the web apps views so that boilerplate code such as head, header, nav bar, footer is written in just one place.
+			This allows other views to focus on just the body of the content.
+	
+appsettings.json
+	Used to hold keys for configurations that can be referenced in the deployment environment.
+	Don't keep secret keys in this file, put it in appsettings.Development.json and gitignore the development file.
+	In the deployment environment, use env variables to set the configuration strings needed.
+
+Asp.Net:
+	Areas:
+		[Area("AreaName")]: Designates the controller as being under a specific area so it changes the routing.
+		
+	Controllers:
+		Controllers are the managers of a group of views and handles backend operations through interactions with UI.
+		
+		Naming must follow format: ControllerName + Controller. 
+		Must inherit from Controller: Ex. public class HomeController : Controller
+			Thats what designates it as a controller, when needed you just use the controller without the ending.
+		Views of the controller will be in the same directory under /Views/ControllerName
+	
+	Actions:
+		Actions are the customer service reps that show the UI and communicates with the controller to display data.
+			Format: 
+				public IActionResult ActionName(){ return View()}
+		IActionResult is the base class for any rendered view for the action.
+			Use View() or RedirectToAction() to return a view.
+			You can use nameof(actionName) so it's not a strings
+			RedirectToAction format: RedirectToAction(nameof(ActionName), new { argumentName = value });
+			If you need to redirect within the same controller than just using the action name is fine, but if going to a different controller, then you must use format: RedirectToAction("Action", "Controller");
+		Asp.Net automatically uses the method name to find the view to be rendered in Area/Views/Controller/ActionName.cshtml.
+		View requires a model class:
+			You can pass in the model in View(model), so you would need to instantiate the model in the action.
+			You could not instantitate it and it will automatically create an object of the model, but it will have no data.
+			The model is recreated on post, but if they aren't tracked in <input asp-for-propertyName> then that data is not passed along, so you either track it or recreate it on post action if it doesn't get changed.
+		Get action method:
+			By default, if not defined it is a get action method.
+		Post action method:
+			You can also add custom validation and add errors to model state and redirect back to view to render the view with validation error back to the client.
+				Ex. ModelState.AddModelError("asp-for-name", "Error message");
+		You can have actions without views.
+		
+	Views:
+		Use "@model model" to inject a model into a view so it can be referenced when giving(get) or receiving(post). Can be accessed using @Model.
+		Use @ to enable razor syntax to use C# code within the cshtml files.
+		Getting domain dynamically using host value and http scheme: var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+        
+		Tempdata:
+			Used to display something for only the next rendering such as notifications.
+			
+		ModelState:
+			ModelState.IsValid: Bool that indicates whether the model passed validation by using the model class to examine validation rules and ensure all rules are followed for model state to be valid.
+		
+		wwwroot folder:
+			Access by using IWebHostEnvironment.WebRootPath, IWebHostEnvironment is injected through dependency injection.
+			
+		Scripts:
+			Use razor syntax to add scripts to a view.
+			Ex.
+			@section Scripts{
+				<script src="~/js/product.js"></script>
+			}
+			
+			If you want to add interactive features such as showing/hiding buttons or showing warnings, use JavaScript and jquery in a <script> element.
+			
+		Methods on passing more data from controller to view, useful for when data is not in model: 4 routes
+			ViewBag: 
+				Dynamic property that wraps around ViewData, so property name and key of ViewData must not match.
+				Any # of values can be assigned, any name can be used as key to assign value, and only last for current http request.
+				Ex. Controller: ViewBag.CategoryList = categoryList; View: asp-items="ViewBag.CategoryList"
+			ViewData: 
+				Similar to ViewBag but it's a dictionary type, so value must be type cast before use.
+				Ex. Controller: ViewData["CategoryList"] = categoryList; View: asp-items="@(ViewData["CategoryList"] as IEnumerable<SelectListItem>)"
+			TempData: 
+				stores data between 2 consecutive requests. Must be type cast and null checked and only stores one time messages.
+				Ex. Controller: TempData["CategoryList" = categoryList; View: asp-items="@(TempData["CategoryList"] as IEnumerable<SelectListItem>)"
+			ViewModel: Use another model to encapsulate all the data needed.
+			
+		Posting Files:
+			Add List<IFormFile> files or IFormFile file to argument of a action. 
+			In the view, add "enctype="multipart/form-data"" to form element, it sets the encoded type for file download and passes it in on http post.
+			Use input where attributes type must be "file" and "name" must match the parameter in action post method to bind the file.
+			Use attribute "multiple" to indicate that there will be multiple files.
+			Ex. <input type="file" name="files" multiple />
+		
+	Annotations: Can be combined: Ex. [HttpPost, ActionName("Delete")]
+		[HttpGet]: Indicates that the action supports http get and returns data.
+		[HttpPost]: Indicates that the action supports http post and will be receiving data from a form submission.
+		[Authorize]: Ensures that only an authorized logged in user can access the action or controller.
+		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]: Ensures that only a specific type of user can access the action/controller.
+		[BindProperty]: Binds the model data directly to controller rather than an action parameter, so when a view uses the model the values are populated without having to pass/retrieve the model. 
+		[ActionName("ActionName")]: When the get/post methods have the same parameters, you need to differentiate the post action, so you combine usage of [HttpPost] and [ActionName] to indicate that the action is for post of that view.
+		[DisplayName("Display Order"]: Used to change the display name for a property.
+
+	Tag Helpers:
+		asp-area="Name": 
+			Used when you add an MVC area scaffolding. It changes the routing to area/controller/view and enables you to separate content that should not be accessible by different users.
+			Once you are within a area, you don't need to use asp-area unless redirecting to a different area.
+		asp-controller="Name": Indicates the controller that the UI element will look for when redirecting.
+		asp-action="Name": Redirects the UI to the specified action in HttpPost or HttpGet. Use asp-route-argumentName="argument" if the action requires an argument.
+		asp-page="Name": Indicates the razor page to redirect to.
+		asp-route-argumentName="argument": Used to pass data to actions in the parameter and must match the parameter name. 
+			The argument name will be included in the URL in format: controller/action?argumentName=value.
+			Can be accessed through Context.Request.Query["argumentName"]
+		asp-for="modelPropertyName": 
+			Automatically assigns the input type and display text based on the property type and name.
+			Used on a input, label, textarea element so it can automatically track the model property. 
+				On GET, it tracks the injected model properties, it will automatically go into the model and find the matching propertyname and display the value.
+			Well, it uses the @model or [BindProperty], by using this tag helper, changes done on the client side when submitted are tracked onto the model and pushed to the action parameter. 
+			Use attribute hidden if you need a property for post so it can be tracked onto the model but don't want to display it such as the model Id property.
+		asp-validation-for="modelPropertyName": used for server and client side model property validation, so that a message is given for validation issues specific to the property so they can be resolved.
+		asp-validation-summary="ModelOnly": Gives a summary of validation errors but only specific to errors in the model. Use "All" to display all error messages.
+		asp-items="propertyName": Used to populate a select element by referring to a list of items. 
+			If this is used to display a list of the navigation property, then the asp-for would refer to the ID because the navigation property should have the Id's whoch is whats needed for the foreign key.
+		
+	Identity:
+		To get userId of the logged in user. Use User which is provided by default and using the NameIdentifier key to get the user id.
+		var userId = ((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value;
+		
+		Get role of a user: _userManager.GetRolesAsync(userObject).GetAwaiter().GetResult().FirstOrDefault();
+		Add role to user: _userManager.AddToRoleAsync(applicationUser, role).GetAwaiter().GetResult();               
+		Remove role from user: _userManager.RemoveFromRoleAsync(applicationUser, oldRole).GetAwaiter().GetResult();
+	
+	EF Core:
+		Accidentally adding a new entity:
+			This can occur when you fill in the navigation property of a model and add it instead of referencing it using the ID.
+				Ex. 
+				Bad: ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == userId);
+				Good: ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+		CRUD operations:
+			Use the unit of work and model repositories to execute CRUD operations.
+			Normal process is that you can do the CRUD operation, but you also have to call dbContext.SaveChanges() for it to apply to the database.
+			Not normal process is that if you make changes directly on the retrieved row data then EF core applies it regardless which can be unintended.
+			Creating: When adding the primary key will be 0, but after being added and saved, the ID will be populated back onto the model used.
+		Find operations:
+			Using Find on the DbSet only works when using the primary key. It's better to implement a filter expression so you can be detailed if you want.
+				It also only looks in the DbContext memory and not the database.
+				Ex. public void Find(Expression<Func<T, bool>> filter)
+			using .FirstOrDefault(u=>Id == id) will look in the database.
+			
+		Filtering:
+			Use .Where(u=>u.Id == id) to add filtering.
+				
+		Projections:
+			Allows you to convert a list of containers into another while selectively setting some properties.
+			Useful for when you want to convert a list of models into a different container while selectively setting some properties.
+			Ex. 
+				_unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                })
+
+	API calls:
+		API support is already added in .NET and MVC architecture, it is similar to action methods where it returns a IActionResult.
+		Path to get data is the same as using an action method: {domain}/area/controller/action
+		The API would can return json data.
+			Ex. 
+				return Json(new { data = objProductList });
+				return Json(new { success = true, message = "Delete Successful" });
+		
+Stripe:
+	Need to create a sessionservice with options to redirect the user to stripe payment and use the sessionId/PaymentId to log it within database..
+		Options will include details about where to redirect, type, and what items there are.
+		LineItems contain data specific to each product such as unit amount, currency, and misc data such as title, description, quantity.
+		Redirect to new URL through the created stripe session where user can execute/cancel payment and depending on result, it redirects to URL listed in the options.
+		SessionId is an identifier for the latest attempted paymnet.
+		PaymentId is an identifier for the actual payment. To get this, you would need to go to stripe session to retrieve the paymentId using the sessionId.
+	Ex. 
+		var options = new SessionCreateOptions
+		{
+			SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
+			CancelUrl = domain + "customer/cart/index",
+			LineItems = new List<SessionLineItemOptions>(), 
+			Mode = "payment",
+		};
+		
+		var service = new SessionService();
+		Session session = service.Create(options);
+		Response.Headers.Add("Location", session.Url);
+		return new StatusCodeResult(303);
+
+Areas:
+	Admin:
+	
+	
+	Customer:
+	
+	
+	Identity:
+		
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

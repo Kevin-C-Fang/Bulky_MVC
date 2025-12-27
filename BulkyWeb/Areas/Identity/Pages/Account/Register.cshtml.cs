@@ -130,7 +130,6 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            // Populate the RoleList in input model so it can be accessed on UI side.
             Input = new()
             {
                 RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
@@ -172,7 +171,6 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                     user.CompanyId = Input.CompanyId;
                 }
 
-                // Creates the user using the user object and password; when invoked it will insert an entry into ASP.NET user's table and encrypt the password.
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -206,7 +204,6 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        // If admin is creating role, don't auto log in.
                         if (User.IsInRole(SD.Role_Admin))
                         {
                             TempData["success"] = "New User Created Successfully";
@@ -230,7 +227,6 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             return Page();
         }
 
-        // Change the type of user created on registration
         private ApplicationUser CreateUser()
         {
             try

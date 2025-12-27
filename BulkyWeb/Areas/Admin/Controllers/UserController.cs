@@ -61,7 +61,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
             if (!(roleManagementVM.ApplicationUser.Role == oldRole))
             {
-                // Role was updated
                 if (roleManagementVM.ApplicationUser.Role == SD.Role_Company)
                 {
                     applicationUser.CompanyId = roleManagementVM.ApplicationUser.CompanyId;
@@ -79,7 +78,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
             }
             else
             {
-                // company was updated
                 if (oldRole == SD.Role_Company && applicationUser.CompanyId != roleManagementVM.ApplicationUser.CompanyId)
                 {
                     applicationUser.CompanyId = roleManagementVM.ApplicationUser.CompanyId;
@@ -95,14 +93,10 @@ namespace BulkyWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            // Including properties can exclude data that doesn't have that property populated, solution is to make that property optional.
             List<ApplicationUser> objUserList = _unitOfWork.ApplicationUser.GetAll(includeProperties: "Company").ToList();
 
-            // Data is now showing regardless of whether company property is populated, but now it's causing issues because in the data table
-            // it tries to access company.Name when company is null.
             foreach (var user in objUserList)
             {
-                // Now roles are not filled because they are not in the application user model. To add that, we have to get the IDs from roles -> userRoles -> Users to match.
                 user.Role = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault();
 
                 if (user.Company == null)
@@ -124,7 +118,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
             if(objFromDb.LockoutEnd != null && objFromDb.LockoutEnd > DateTime.Now)
             {
-                // user is locked and needs to be unlocked
                 objFromDb.LockoutEnd = DateTime.Now;
             }
             else
